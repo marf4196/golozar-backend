@@ -31,11 +31,17 @@ def tasks_view(request, *args, **kwargs):
             return JsonResponse({'user': 'anonymouse'}, status = 403)
 
     else:
-        print('hey')
         raise PermissionError
-
+@csrf_exempt
 def tooth_view(request, *args, **kwargs):
     if request.POST:
-        pass
+        if not request.user.is_anonymous:
+            user = request.user
+            
+            qs = Teeth.objects.filter(owner=user)
+            return JsonResponse({'objects':qs})
+        else:
+            return JsonResponse({'user': 'anonymouse'}, status = 403)
+
     else:
-        raise PermissionError 
+        raise PermissionError
